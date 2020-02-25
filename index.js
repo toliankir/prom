@@ -4,9 +4,10 @@
 // const fs = require('fs');
 const promClient = require('./prom');
 const ostatki = require('./ostatki');
+const axios = require('axios');
 
 async function test() {
-    // await ostatki.download();
+    await ostatki.download();
     const promGoods = await promClient.getAllGoods();
     const ostatkiGoods = await ostatki.getGoods();
     const diffGoods = [];
@@ -48,12 +49,12 @@ async function test() {
         from: 'PGX ',
         to: 'PGX'
     }]);
-   
+
     await promClient.changeProductArray([diffGoods[0]]);
     console.log('---------------');
     await promClient.changeProductArray([{
         id: 1132107444,
-        name: 'Картина по номерам "Идеальная пара" KН4678'
+        name: 'Тестова строка'
     }]);
     // console.log(diffGoods);
     // console.log(goods[0].id, goods[0].name, goods[0].presence, goods[0].price);
@@ -65,16 +66,6 @@ async function test() {
     // await promClient.changeProductStatus(goods[0].id);
 }
 
-function toUnicode(str) {
-	return str.split('').map(function (value, index, array) {
-		var temp = value.charCodeAt(0).toString(16).toUpperCase();
-		if (temp.length > 2) {
-			return '\\u' + temp;
-		}
-		return value;
-	}).join('');
-}
-
 function changeNames(products, changesArray) {
     const result = products.map(product => {
         let name = product.name;
@@ -83,7 +74,7 @@ function changeNames(products, changesArray) {
         });
         return {
             id: product.id,
-            name            
+            name
         }
     })
     return result;
