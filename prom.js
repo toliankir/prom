@@ -81,6 +81,7 @@ class PromService {
     }
 
     async changeProductArray(array) {
+        console.log(array);
         const response = await this.makeApiCall('POST', '/api/v1/products/edit', array);
         console.log(response);
     }
