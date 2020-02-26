@@ -1,69 +1,46 @@
-const https = require('https');
-
+const axios = require('axios');
 
 const AUTH_TOKEN = 'eb23a26395026559668a736a602199a351ea92b3';
-const HOST = 'my.prom.ua';
-const PORT = 443;
+const HOST = 'https://my.prom.ua';
 
 class PromService {
     constructor(token) {
         this.token = token;
+        this.products = [];
     }
 
-    makeApiCall(method, url, body) {
-        return new Promise((resolve, reject) => {
-            let options = {
-                hostname: HOST,
-                port: PORT,
-                path: url,
-                method: method,
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            let bodyData = '';
-            if (body) {
-                bodyData = JSON.stringify(body);
-                options.headers['Content-Length'] = bodyData.length;
-            }
-
-            const req = https.request(options, (res) => {
-                let result = '';
-
-                res.setEncoding('utf8');
-
-                res.on('data', (chunk) => {
-                    result += chunk;
-                });
-
-                res.on('end', () => {
-                    resolve(JSON.parse(result));
-                });
-            });
-
-            req.on('error', (e) => {
-                reject(e);
-            });
-
-            req.write(bodyData);
-            req.end();
+    async makeApiCall(method, url, data) {
+        const response = await axios({
+            method,
+            baseURL: HOST,
+            url,
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                'Content-Type': 'application/json'
+            },
+            data
         });
+        return response.data;
     }
 
-    async getAllGoods() {
+    async fetchAllGoods() {
         const allGoods = [];
-        const requestCount = 50;
+        const requestCount = 100;
         let goods = await this.getGoods(0, requestCount);
         allGoods.push(...goods);
 
         while (goods.length !== 0) {
             const lastId = allGoods[allGoods.length - 1].id;
+            /* eslint-disable */
             goods = await this.getGoods(lastId, requestCount);
+            /* eslint-enable */
             allGoods.push(...goods);
         }
-        return allGoods;
+        this.products = allGoods;
+    }
+
+    getAllProducts() {
+        return this.products;
     }
 
     async getGoods(from = 0, count = 5) {
@@ -71,18 +48,21 @@ class PromService {
         return products;
     }
 
-    async changeProductStatus(id) {
-        const response = await this.makeApiCall('POST', '/api/v1/products/edit', [{
-            id,
-            presence: 'available',
-            price: 100
-        }]);
-        console.log(response);
+    async changeProductArray(array) {
+        const sendCount = 50;
+        let count = 0;
+        // const promises = [];
+        while (count < array.length) {
+            const data = await this.makeApiCall('POST', '/api/v1/products/edit', array.slice(count, count + sendCount));
+            console.log(data);
+            count += sendCount;
+        }
+        // Promise.all(promises);
     }
 
-    async changeProductArray(array) {
-        const response = await this.makeApiCall('POST', '/api/v1/products/edit', array);
-        console.log(response);
+    async geyProductById(id) {
+        const product = await this.makeApiCall('GET', `/api/v1/products/${id}`, null);
+        return product;
     }
 }
 

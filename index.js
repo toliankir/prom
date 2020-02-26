@@ -3,59 +3,50 @@
 // const { parseString } = require('xml2js');
 // const fs = require('fs');
 const promClient = require('./prom');
-const ostatki = require('./ostatki');
+const raskras = require('./raskras');
+// const helpers = require('./productHelpers');
 
 async function test() {
-    // await ostatki.download();
-    const promGoods = await promClient.getAllGoods();
-    const ostatkiGoods = await ostatki.getGoods();
-    const diffGoods = [];
-    let arr = [];
-    promGoods.forEach((promEl) => {
-        const fromOst = ostatkiGoods.find(ostEl => promEl.name.indexOf(ostEl.code) !== -1);
-        if (fromOst) {
-            if (promEl.presence === 'available' && !fromOst.present) {
-                diffGoods.push({
-                    id: promEl.id,
-                    presence: 'not_available'
-                });
-            }
-            if (promEl.presence === 'not_available' && fromOst.present) {
-                diffGoods.push({
-                    id: promEl.id,
-                    presence: 'available'
-                });
-            }
-        } else {
-            arr.push({
-                id: promEl.id,
-                name: promEl.name
-            });
-            console.log(promEl.name);
+    await raskras.download();
+    await promClient.fetchAllGoods();
+    const promProducts = promClient.getAllProducts();
+    await raskras.decodeProducts();
+    // const untracked = raskras.getUntacketProducts(promProducts);
+    const raskrasProd = raskras.getAllProducts();
+    let count = 0;
+    raskrasProd.forEach(el => {
+        if (el.present) {
+            count += 1;
         }
     });
-    // console.log(diffGoods);
-    // console.log(goods[0].id, goods[0].name, goods[0].presence, goods[0].price);
-    // let count = 0;
-    // while (count < diffGoods.length) {
-    //     await promClient.changeProductArray(diffGoods.slice(count, count + 100));
-    //     count += 100;
-    // }
-    // await promClient.changeProductStatus(goods[0].id);
-    arr = arr.map(el => {
-        return {
-            id: el.id,
-            name: el.name.toString().replace('KН', 'KH')
-        };
-    });
-    // console.log(arr);
-    await promClient.changeProductArray(arr);
+    console.log(count);
 
-    // let count = 0;
-    // while (count < arr.length) {
-    //     await promClient.changeProductArray(arr.slice(count, count + 100));
-    //     count += 100;
-    // }
+    count = 0;
+    promProducts.forEach(el => {
+        if (el.presence === 'available') {
+            count += 1;
+        }
+    });
+    console.log(count);
+
+    const untracked = raskras.getWithChangedPresence(promProducts);
+    // const changedProducts = helpers.changeNames(untracked, helpers.raskrasNamesConvert);
+    // console.log(untracked.length);
+    promClient.changeProductArray(untracked);
+    // console.log(untracked);
+
+    // let p = await promClient.geyProductById(1132839420);
+    // console.log(p.product);
+    // console.log(p.product.name, p.product.presence);
+
+    // await promClient.changeProductArray([{
+    //     id: p.product.id,
+    //     presence: 'not_available'
+    // }]);
+
+    // p = await promClient.geyProductById(1132839420);
+    // console.log(p.product.presence);
 }
+
 
 test();
