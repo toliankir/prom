@@ -11,6 +11,7 @@ class Ostatki {
     }
 
     async download() {
+        console.log(`Downloading: ${FILE_NAME}`);
         return new Promise((res) => {
             wget(this.link, () => {
                 res();
@@ -82,6 +83,10 @@ class Ostatki {
             }
         });
         return untrackedProducts;
+    }
+
+    getPresentedProducts() {
+        return this.products.filter((el) => el.present);
     }
 
     getAllProducts() {

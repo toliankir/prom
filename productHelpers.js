@@ -1,4 +1,4 @@
-const changeNames = (products, changesArray) => {
+const changeNamesRaskras = (products, changesArray) => {
     const result = products.map(product => {
         let name = product.name;
         changesArray.forEach(el => {
@@ -14,6 +14,10 @@ const changeNames = (products, changesArray) => {
 
 const raskrasNamesConvert = [{
     from: 'KНО',
+    to: 'KHO'
+},
+{
+    from: 'KHО ',
     to: 'KHO'
 },
 {
@@ -59,6 +63,6 @@ const raskrasNamesConvert = [{
 ];
 
 module.exports = {
-    changeNames,
+    changeNamesRaskras,
     raskrasNamesConvert
 };

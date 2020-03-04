@@ -1,6 +1,7 @@
+require('dotenv').config();
 const axios = require('axios');
 
-const AUTH_TOKEN = 'eb23a26395026559668a736a602199a351ea92b3';
+const AUTH_TOKEN = process.env.PROM_API_KEY;
 const HOST = 'https://my.prom.ua';
 
 class PromService {
@@ -23,19 +24,22 @@ class PromService {
         return response.data;
     }
 
-    async fetchAllGoods() {
+    async fetchAllGoods(group) {
         const allGoods = [];
         const requestCount = 100;
-        let goods = await this.getGoods(0, requestCount);
+        let goods = await this.getGoods(group, 0, requestCount);
         allGoods.push(...goods);
+        console.log(`Fetched: ${goods.length}`);
 
-        while (goods.length !== 0) {
+        while (goods.length === requestCount) {
             const lastId = allGoods[allGoods.length - 1].id;
             /* eslint-disable */
-            goods = await this.getGoods(lastId, requestCount);
+            goods = await this.getGoods(group, lastId, requestCount,);
             /* eslint-enable */
+            console.log(`Fetched: ${goods.length}`);
             allGoods.push(...goods);
         }
+        console.log(`Articles fetched: ${allGoods.length}`);
         this.products = allGoods;
     }
 
@@ -43,8 +47,8 @@ class PromService {
         return this.products;
     }
 
-    async getGoods(from = 0, count = 5) {
-        const { products } = await this.makeApiCall('GET', `/api/v1/products/list?limit=${count}&last_id=${from}`, null);
+    async getGoods(group, from = 0, count = 5) {
+        const { products } = await this.makeApiCall('GET', `/api/v1/products/list?limit=${count}&last_id=${from}&group_id=${group}`, null);
         return products;
     }
 
@@ -53,8 +57,9 @@ class PromService {
         let count = 0;
         // const promises = [];
         while (count < array.length) {
+            /* eslint-disable */
             const data = await this.makeApiCall('POST', '/api/v1/products/edit', array.slice(count, count + sendCount));
-            console.log(data);
+            /* eslint-enable */
             count += sendCount;
         }
         // Promise.all(promises);
