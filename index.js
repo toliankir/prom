@@ -21,11 +21,12 @@ async function renameUntrackedRaskras() {
 async function changeRaskrasPresenceState() {
     const groupId = 36415834;
 
+    await raskras.download();
     await promClient.fetchAllGoods(groupId);
     const promProducts = promClient.getAllProducts();
     await raskras.decodeProducts();
     const changedPresence = raskras.getWithChangedPresence(promProducts);
-    promClient.changeProductArray(changedPresence);
+    // await promClient.changeProductArray(changedPresence);
 }
 
 async function test() {
@@ -38,7 +39,7 @@ async function test() {
 
 (async () => {
     // renameUntrackedRaskras();
-    // test();
+    // await test();
     // await raskras.download();
     changeRaskrasPresenceState();
 })();

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <% data.forEach(product => { %>
+        <tr>
+            <td><img width="100px" src="/images/<%= product.code %>.jpg"></td>
+            <td><%= product.code %></td>
+            <td><%= product.cost %></td>
+            <td><%= product.present %></td>
+        </tr>
+    <% }); %>
+</table>
+</body>
+</html>

@@ -1,8 +1,8 @@
 // const csv = require('csv-parser');
 // const fs = require('fs');
 const glob = require('glob');
-const promClient = require('./prom');
-const raskras = require('./raskras');
+const promClient = require('../prom');
+const raskras = require('../raskras');
 
 // function readCsv(file) {
 //     return new Promise((resolve, reject) => {
@@ -54,8 +54,7 @@ async function getUntackedProducts() {
     return productDiff;
 }
 
-(async () => {
-    console.log(await getImageName('ide_7101-1'));
+async function getUntrackeForExport() {
     const untacked = await getUntackedProducts();
     const untrackedWithImage = [];
     for (const product of untacked) {
@@ -64,9 +63,13 @@ async function getUntackedProducts() {
             untrackedWithImage.push(product);
         }
     }
-    console.log(untrackedWithImage.length);
+    return untrackedWithImage;
 //     // const data = await readCsv('export-products-02-03-20_21-06-18.csv');
 //     // const test = { ...data[0] };
 //     // console.log(test);
 //     // removeEmpty(data[0]);
-})();
+};
+
+module.exports = {
+    getUntrackeForExport
+}
