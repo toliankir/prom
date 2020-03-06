@@ -1,10 +1,9 @@
 const wget = require('node-wget');
 const j = require('j');
-// const fs = require('fs');
 
 const FILE_NAME = 'https://www.dropbox.com/s/7orl61qn8vl2xy8/Ostatki_opt.xlsx?dl=1';
 
-class Ostatki {
+class RaskrasOstatki {
     constructor(link) {
         this.link = link;
         this.products = [];
@@ -97,4 +96,4 @@ class Ostatki {
     }
 }
 
-module.exports = new Ostatki(FILE_NAME);
+module.exports = new RaskrasOstatki(FILE_NAME);

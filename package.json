@@ -12,7 +12,8 @@
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.20.1"
+    "eslint-plugin-import": "^2.20.1",
+    "nodemon": "^2.0.2"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -21,7 +22,6 @@
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "follow-redirects": "^1.10.0",
-    "glob": "^7.1.6",
     "j": "^1.0.0",
     "node-wget": "^0.4.3",
     "xml2js": "^0.4.23"

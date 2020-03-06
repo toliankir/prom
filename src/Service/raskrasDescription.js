@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class DescriptionService {
+class RaskrasDescription {
     readFile() {
         return new Promise((resolve, reject) => {
             fs.readFile('./desc.json', (error, data) => {
@@ -18,6 +18,7 @@ class DescriptionService {
     getData() {
         return this.data;
     }
+
 }
 
-module.exports = new DescriptionService();
+module.exports = new RaskrasDescription();

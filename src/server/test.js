@@ -1,9 +1,10 @@
 // const csv = require('csv-parser');
 // const fs = require('fs');
-const glob = require('glob');
-const promClient = require('../prom');
-const raskras = require('../raskras');
-const descriptionService = require('../descriptionService');
+const fs = require('fs');
+const path = require('path');
+const promClient = require('../Service/prom');
+const raskras = require('../Service/raskrasOstatki');
+const descriptionService = require('../Service/raskrasDescription');
 
 // function readCsv(file) {
 //     return new Promise((resolve, reject) => {
@@ -35,13 +36,17 @@ function codeInPromCatalog(code, promProducts) {
     return promProducts.some((promProduct) => promProduct.name.indexOf(code) > -1);
 }
 
-function getImageName(code) {
+function getImagesArray(dir) {
+    const dirPath = path.join(process.cwd(), dir);
     return new Promise((resolve, reject) => {
-        glob(`images/${code}.*`, (err, files) => {
-            if (err) reject(err);
-            resolve(files[0]);
-        });
+        fs.readdir(dirPath, (err, files) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(files);
+        })
     });
+    
 }
 
 function getUntackedProducts() {
@@ -53,12 +58,14 @@ function getUntackedProducts() {
 }
 
 async function getUntrackeForExport() {
+    const filesArray = await getImagesArray('images');
+    console.log(filesArray);
     const untacked = getUntackedProducts();
     const untrackedWithImage = [];
     const desc = descriptionService.getData();
     for (let product = 0; product < untacked.length; product += 1) {
         const more = desc.find(el => el.code == untacked[product].articul);
-        const file = await getImageName(untacked[product].code);
+        const file = filesArray.find(file => file.split('.')[0] === untacked[product].code);
 
         if (file) {
             untrackedWithImage.push({
@@ -68,10 +75,6 @@ async function getUntrackeForExport() {
         }
     }
     return untrackedWithImage;
-//     // const data = await readCsv('export-products-02-03-20_21-06-18.csv');
-//     // const test = { ...data[0] };
-//     // console.log(test);
-//     // removeEmpty(data[0]);
 }
 
 module.exports = {
