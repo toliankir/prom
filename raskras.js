@@ -20,7 +20,8 @@ class Ostatki {
     }
 
     async decodeProducts() {
-        const data = j.XLSX.readFile('./Ostatki_opt.xlsx');
+        const file = './Ostatki_opt.xlsx';
+        const data = j.XLSX.readFile(file);
         const sheet = Object.values(Object.values(data.Sheets)[0]);
         const productCode = 1;
         const productCost = 2;
@@ -30,12 +31,14 @@ class Ostatki {
         const products = [];
         while (currentCell < sheet.length - (2 * colsCount)) {
             products.push({
+                articul: sheet[currentCell ].v,
                 code: sheet[currentCell + productCode].v,
                 cost: sheet[currentCell + productCost].v,
                 present: sheet[currentCell + productPresent].v === '+'
             });
             currentCell += colsCount;
         }
+        console.log(`Decoded ${products.length} products from ${file}.`);
         this.products = products;
     }
 

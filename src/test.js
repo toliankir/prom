@@ -3,6 +3,7 @@
 const glob = require('glob');
 const promClient = require('../prom');
 const raskras = require('../raskras');
+const descriptionService = require('../descriptionService');
 
 // function readCsv(file) {
 //     return new Promise((resolve, reject) => {
@@ -43,11 +44,8 @@ function getImageName(code) {
     });
 }
 
-async function getUntackedProducts() {
-    const groupId = 36415834;
-    await promClient.fetchAllGoods(groupId);
+function getUntackedProducts() {
     const promProducts = promClient.getAllProducts();
-    await raskras.decodeProducts();
     const raskrasPresentedProducts = raskras.getPresentedProducts();
     const productDiff = raskrasPresentedProducts.filter((raskrasProduct) => (
         !codeInPromCatalog(raskrasProduct.code, promProducts)));
@@ -55,12 +53,18 @@ async function getUntackedProducts() {
 }
 
 async function getUntrackeForExport() {
-    const untacked = await getUntackedProducts();
+    const untacked = getUntackedProducts();
     const untrackedWithImage = [];
-    for (const product of untacked) {
-        const file = await getImageName(product.code);
+    const desc = descriptionService.getData();
+    for (let product = 0; product < untacked.length; product += 1) {
+        const more = desc.find(el => el.code == untacked[product].articul);
+        const file = await getImageName(untacked[product].code);
+
         if (file) {
-            untrackedWithImage.push(product);
+            untrackedWithImage.push({
+                ...untacked[product],
+                more
+            });
         }
     }
     return untrackedWithImage;
@@ -68,8 +72,8 @@ async function getUntrackeForExport() {
 //     // const test = { ...data[0] };
 //     // console.log(test);
 //     // removeEmpty(data[0]);
-};
+}
 
 module.exports = {
     getUntrackeForExport
-}
+};

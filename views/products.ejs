@@ -9,10 +9,18 @@
     <table>
         <% data.forEach(product => { %>
         <tr>
+            <td><%= product.articul %></td>
             <td><img width="100px" src="/images/<%= product.code %>.jpg"></td>
             <td><%= product.code %></td>
             <td><%= product.cost %></td>
-            <td><%= product.present %></td>
+            <td>
+                <% if(product.more){ %>
+                <p>Размер:<%= product.more.size %></p>
+                <p>Производитель:<%= product.more.producer %></p>
+                <p>Название:<%= product.more.title %></p>
+                <p>Цена:<%= product.more.roznica %></p>
+                <% } %>
+            </td>
         </tr>
     <% }); %>
 </table>

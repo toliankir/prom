@@ -20,7 +20,6 @@ async function renameUntrackedRaskras() {
 
 async function changeRaskrasPresenceState() {
     const groupId = 36415834;
-
     await raskras.download();
     await promClient.fetchAllGoods(groupId);
     const promProducts = promClient.getAllProducts();
